@@ -32,3 +32,4 @@ class CountriesSpider(scrapy.Spider):
                 'year': year,
                 'population': population
             }
+
