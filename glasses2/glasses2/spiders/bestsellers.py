@@ -6,18 +6,17 @@ class BestsellersSpider(scrapy.Spider):
     allowed_domains = ['www.glassesshop.com']
     start_urls = ['https://www.glassesshop.com/bestsellers']
 
-    def start_requests(self):
-        yield scrapy.Request(url='https://www.glassesshop.com/bestsellers', callback=self.parse, headers='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.73')
-
     def parse(self, response):
-        for pair in response.xpath(''):
+        for pair in response.xpath("//div[@class='col-12 pb-5 mb-lg-3 col-lg-4 product-list-row text-center product-list-item']"):
             yield {
-                'product_url': response.urljoin(pair.xpath('').get()),
-                'product_image_link': pair.xpath('').get(),
-                'product_name': pair.xpath('').get(),
-                'product_price': pair.xpath('').get()
+                'product_url': pair.xpath(".//div[@class='product-img-outer']/a[1]/@href").get(),
+                'product_image_link': pair.xpath(".//div[@class='product-img-outer']/a[1]/img[1]/@data-src").get(),
+                'product_name': pair.xpath(".//div[@class='p-title-block']/div[2]/div/div/div/a[1]/@title").get(),
+                'product_price': pair.xpath(".//div[@class='p-title-block']/div[2]/div/div[2]/div[@class='p-price']/div[1]/span/text()").get()
             }
-        next_page = pair.xpath('').get()
+        next_page = response.xpath("//ul[@class='pagination']/li[@class='page-item active']//following-sibling::li/a/@href").get()
 
         if next_page:
-            yield scrapy.Request(url=next_page, callback=self.parse, headers='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.73')
+            yield scrapy.Request(url=next_page, callback=self.parse)
+
+
