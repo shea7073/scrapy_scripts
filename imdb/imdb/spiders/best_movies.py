@@ -10,13 +10,23 @@ class BestMoviesSpider(CrawlSpider):
 
     user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.73'
 
+    '''
     def start_requests(self):
-
-
+        yield scrapy.Request(url='https://web.archive.org/web/20200715000935if_/https://www.imdb.com/search/title/?groups=top_250&sort=user_rating/', headers={
+              'User-Agent': self.user_agent
+            # Delete this method if you dont care about spoofing headers
+        })
+    '''
     rules = (
         Rule(LinkExtractor(restrict_xpaths="//h3[@class='lister-item-header']/a"), callback='parse_item', follow=True),
         Rule(LinkExtractor(restrict_xpaths="(//a[@class='lister-page-next next-page'])[2]"))
     )
+
+    '''
+    def set_user_agent(self, request, spider):
+        request.headers['User-Agent'] = self.user_agent
+        return request
+    '''
 
     def parse_item(self, response):
         yield {
@@ -25,7 +35,7 @@ class BestMoviesSpider(CrawlSpider):
             'duration': response.xpath("(//time)[1]/text()").get().strip(' \n\t'),
             'genre': response.xpath("//div[@class='subtext']/a[1]/span/text()").get(),
             'rating': response.xpath("//span[@itemprop='ratingValue']/text()").get(),
-            'movie_url': response.url
+            'movie_url': response.url,
         }
 
 
