@@ -17,7 +17,7 @@ def clean_data(file_name):
         text_pattern = ""
         if dic['rating'] and re.search(num_pattern, dic['rating']):
             dic['num_score'] = re.search(num_pattern, dic['rating']).group(0)
-            dic['word_score'] =
+            dic['word_score'] = None
         else:
             dic['num_score'] = None
             dic['word_score'] = None
